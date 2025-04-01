@@ -1,11 +1,11 @@
 "use client";
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardFooter, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-label';
 import React, { useState, Suspense } from 'react';
 import { useAuthControllerLogin } from '@/services/generated/api';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import Input from '@/components/ui/input';
 
 interface LoginResponse {
     accessToken: string;
@@ -19,8 +19,12 @@ const LoginPage = () => {
     const loginMutation = useAuthControllerLogin<LoginResponse>(); // Specify the response type
     const router = useRouter();
 
-    const handleSubmit = async (e: React.FormEvent, searchParams: URLSearchParams) => {
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const username = formData.get("username") as string;
+        const password = formData.get("password") as string;
+
         setError(null); // Reset error state
         try {
             const response = await loginMutation.mutateAsync({
@@ -28,16 +32,17 @@ const LoginPage = () => {
             });
 
             // Store tokens in localStorage
-            localStorage.setItem('accessToken', (response.data as any).accessToken);
-            localStorage.setItem('refreshToken', (response.data as any).refreshToken);
+            localStorage.setItem('accessToken', response.data.accessToken);
+            localStorage.setItem('refreshToken', response.data.refreshToken);
 
             console.log('Login successful:', response);
 
             // Redirect to returnUrl or default to home
+            const searchParams = new URLSearchParams(window.location.search);
             const returnUrl = searchParams.get('returnUrl') || '/';
             router.push(returnUrl);
-        } catch (err) {
-            console.error('Login failed:', err);
+        } catch (error: unknown) {
+            console.error('Login failed:', error);
             setError('Invalid username or password. Please try again.');
         }
     };
@@ -50,7 +55,7 @@ const LoginPage = () => {
                 password={password}
                 setPassword={setPassword}
                 error={error}
-                handleSubmit={handleSubmit}
+                handleLogin={handleLogin}
                 isLoading={loginMutation.isLoading}
             />
         </Suspense>
@@ -63,7 +68,7 @@ const LoginContent = ({
     password,
     setPassword,
     error,
-    handleSubmit,
+    handleLogin,
     isLoading,
 }: {
     username: string;
@@ -71,11 +76,9 @@ const LoginContent = ({
     password: string;
     setPassword: React.Dispatch<React.SetStateAction<string>>;
     error: string | null;
-    handleSubmit: (e: React.FormEvent, searchParams: URLSearchParams) => void;
+    handleLogin: (e: React.FormEvent<HTMLFormElement>) => void;
     isLoading: boolean;
 }) => {
-    const searchParams = useSearchParams();
-
     return (
         <div className="flex h-screen">
             <div
@@ -88,7 +91,7 @@ const LoginContent = ({
                         <h2 className="text-2xl font-bold text-center">Login</h2>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={(e) => handleSubmit(e, searchParams)}>
+                        <form onSubmit={handleLogin}>
                             <div className="mb-4">
                                 <Label htmlFor="username">Username</Label>
                                 <Input

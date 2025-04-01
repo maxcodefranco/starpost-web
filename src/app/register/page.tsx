@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import Input from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { useAuthControllerRegister } from "@/services/generated/api";
 import { useRouter } from "next/navigation";
@@ -11,8 +11,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 const registerSchema = z.object({
+    email: z.string().email("Invalid email address."),
     username: z.string().min(1, "Username is required."),
     password: z.string().min(6, "Password must be at least 6 characters."),
+    firstName: z.string().min(1, "First name is required."),
+    lastName: z.string().min(1, "Last name is required."),
     termsAccepted: z.literal(true, {
         errorMap: () => ({ message: "You must accept the terms." }),
     }),
@@ -39,6 +42,11 @@ const RegisterPage = () => {
                     username: data.username,
                     password: data.password,
                     termsAccepted: data.termsAccepted,
+                    profile: {
+                        email: data.email,
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                    },
                 },
             });
 
@@ -65,6 +73,19 @@ const RegisterPage = () => {
                 <h2 className="text-2xl font-bold mb-4">Register</h2>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="mb-4">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                            type="email"
+                            id="email"
+                            {...register("email")}
+                            placeholder="Enter your email"
+                            className={`mt-1 ${errors.email ? "border-red-500" : ""}`}
+                        />
+                        {errors.email && (
+                            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                        )}
+                    </div>
+                    <div className="mb-4">
                         <Label htmlFor="username">Username</Label>
                         <Input
                             type="text"
@@ -88,6 +109,32 @@ const RegisterPage = () => {
                         />
                         {errors.password && (
                             <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                        )}
+                    </div>
+                    <div className="mb-4">
+                        <Label htmlFor="firstName">First Name</Label>
+                        <Input
+                            type="text"
+                            id="firstName"
+                            {...register("firstName")}
+                            placeholder="Enter your first name"
+                            className={`mt-1 ${errors.firstName ? "border-red-500" : ""}`}
+                        />
+                        {errors.firstName && (
+                            <p className="text-red-500 text-sm mt-1">{errors.firstName.message}</p>
+                        )}
+                    </div>
+                    <div className="mb-4">
+                        <Label htmlFor="lastName">Last Name</Label>
+                        <Input
+                            type="text"
+                            id="lastName"
+                            {...register("lastName")}
+                            placeholder="Enter your last name"
+                            className={`mt-1 ${errors.lastName ? "border-red-500" : ""}`}
+                        />
+                        {errors.lastName && (
+                            <p className="text-red-500 text-sm mt-1">{errors.lastName.message}</p>
                         )}
                     </div>
                     <div className="mb-4">

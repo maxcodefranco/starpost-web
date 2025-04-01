@@ -24,9 +24,11 @@ import type {
   AuthControllerRefreshTokenBody,
   AuthControllerRegisterBody,
   LoginOutputDto,
+  OnboardingControllerUploadAvatarBody,
   ProfileOutputDto,
   RegisterOutputDto,
-  UpdateProfileDto
+  UpdateProfileDto,
+  User
 } from './schemas';
 
 import { apiClientFunction } from '../apiClient';
@@ -435,3 +437,138 @@ export function useProfileControllerGetProfile<TData = Awaited<ReturnType<typeof
 
   return query;
 }
+
+
+
+
+/**
+ * @summary Edit user profile
+ */
+export const onboardingControllerEditProfile = (
+    updateProfileDto: UpdateProfileDto,
+ ) => {
+      
+      
+      return apiClientFunction<User>(
+      {url: `/onboarding/edit-profile`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: updateProfileDto
+    },
+      );
+    }
+  
+
+
+export const getOnboardingControllerEditProfileMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerEditProfile>>, TError,{data: UpdateProfileDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerEditProfile>>, TError,{data: UpdateProfileDto}, TContext> => {
+    
+const mutationKey = ['onboardingControllerEditProfile'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof onboardingControllerEditProfile>>, {data: UpdateProfileDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  onboardingControllerEditProfile(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OnboardingControllerEditProfileMutationResult = NonNullable<Awaited<ReturnType<typeof onboardingControllerEditProfile>>>
+    export type OnboardingControllerEditProfileMutationBody = UpdateProfileDto
+    export type OnboardingControllerEditProfileMutationError = void
+
+    /**
+ * @summary Edit user profile
+ */
+export const useOnboardingControllerEditProfile = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerEditProfile>>, TError,{data: UpdateProfileDto}, TContext>, }
+): UseMutationResult<
+        Awaited<ReturnType<typeof onboardingControllerEditProfile>>,
+        TError,
+        {data: UpdateProfileDto},
+        TContext
+      > => {
+
+      const mutationOptions = getOnboardingControllerEditProfileMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }
+    
+/**
+ * @summary Upload user avatar
+ */
+export const onboardingControllerUploadAvatar = (
+    onboardingControllerUploadAvatarBody: OnboardingControllerUploadAvatarBody,
+ ) => {
+      
+      const formData = new FormData();
+if(onboardingControllerUploadAvatarBody.avatar !== undefined) {
+ formData.append('avatar', onboardingControllerUploadAvatarBody.avatar)
+ }
+
+      return apiClientFunction<User>(
+      {url: `/onboarding/upload-avatar`, method: 'PUT',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData
+    },
+      );
+    }
+  
+
+
+export const getOnboardingControllerUploadAvatarMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerUploadAvatar>>, TError,{data: OnboardingControllerUploadAvatarBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerUploadAvatar>>, TError,{data: OnboardingControllerUploadAvatarBody}, TContext> => {
+    
+const mutationKey = ['onboardingControllerUploadAvatar'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof onboardingControllerUploadAvatar>>, {data: OnboardingControllerUploadAvatarBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  onboardingControllerUploadAvatar(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type OnboardingControllerUploadAvatarMutationResult = NonNullable<Awaited<ReturnType<typeof onboardingControllerUploadAvatar>>>
+    export type OnboardingControllerUploadAvatarMutationBody = OnboardingControllerUploadAvatarBody
+    export type OnboardingControllerUploadAvatarMutationError = void
+
+    /**
+ * @summary Upload user avatar
+ */
+export const useOnboardingControllerUploadAvatar = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof onboardingControllerUploadAvatar>>, TError,{data: OnboardingControllerUploadAvatarBody}, TContext>, }
+): UseMutationResult<
+        Awaited<ReturnType<typeof onboardingControllerUploadAvatar>>,
+        TError,
+        {data: OnboardingControllerUploadAvatarBody},
+        TContext
+      > => {
+
+      const mutationOptions = getOnboardingControllerUploadAvatarMutationOptions(options);
+
+      return useMutation(mutationOptions);
+    }

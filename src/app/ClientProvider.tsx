@@ -1,30 +1,19 @@
 "use client";
 
+import React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import React, { useState } from "react";
 
-export default function ClientProvider({
-    children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
-    const [queryClient] = useState(
-        () =>
-            new QueryClient({
-                defaultOptions: {
-                    queries: {
-                        retry: 1, // Retry failed queries once
-                        refetchOnWindowFocus: false, // Avoid refetching on window focus
-                    },
-                },
-            })
-    );
+const queryClient = new QueryClient();
 
+export default function ClientProvider({ children }: { children: React.ReactNode }) {
     return (
         <QueryClientProvider client={queryClient}>
             {children}
-            <ReactQueryDevtools initialIsOpen={false} />
+            {/* Certifique-se de que o <aside> está dentro de um contêiner válido */}
+            <div>
+                <ReactQueryDevtools initialIsOpen={false} />
+            </div>
         </QueryClientProvider>
     );
 }

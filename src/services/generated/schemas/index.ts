@@ -11,6 +11,8 @@ export * from './authControllerRefreshTokenBody';
 export * from './authControllerRegisterBody';
 export * from './authControllerRegisterBodyProfile';
 export * from './loginOutputDto';
+export * from './onboardingControllerUploadAvatarBody';
 export * from './profileOutputDto';
 export * from './registerOutputDto';
 export * from './updateProfileDto';
+export * from './user';
