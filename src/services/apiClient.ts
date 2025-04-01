@@ -1,9 +1,9 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: { resolve: (token: string | null) => void; reject: (error: unknown) => void }[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: unknown, token: string | null = null) => {
     failedQueue.forEach((prom) => {
         if (error) {
             prom.reject(error);
@@ -22,7 +22,7 @@ export const apiClient = axios.create({
 });
 
 // Request interceptor to attach token
-apiClient.interceptors.request.use((config) => {
+apiClient.interceptors.request.use((config: AxiosRequestConfig) => {
     const token = localStorage.getItem('accessToken');
     if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -38,11 +38,13 @@ apiClient.interceptors.response.use(
 
         if (error.response?.status === 401 && !originalRequest._retry) {
             if (isRefreshing) {
-                return new Promise((resolve, reject) => {
+                return new Promise<string | null>((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
                 })
                     .then((token) => {
-                        originalRequest.headers.Authorization = `Bearer ${token}`;
+                        if (token && originalRequest.headers) {
+                            originalRequest.headers.Authorization = `Bearer ${token}`;
+                        }
                         return apiClient(originalRequest);
                     })
                     .catch((err) => {
@@ -69,7 +71,9 @@ apiClient.interceptors.response.use(
                 localStorage.setItem('refreshToken', newRefreshToken);
                 processQueue(null, accessToken);
 
-                originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+                if (originalRequest.headers) {
+                    originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+                }
                 return apiClient(originalRequest);
             } catch (err) {
                 processQueue(err, null);
@@ -86,4 +90,4 @@ apiClient.interceptors.response.use(
 );
 
 // Export a named function for Orval mutator compatibility
-export const apiClientFunction = (config: any) => apiClient(config);
+export const apiClientFunction = (config: AxiosRequestConfig) => apiClient(config);
