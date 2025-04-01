@@ -4,23 +4,23 @@ FROM node:20-alpine AS base
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+# Copy package.json and yarn.lock
+COPY package.json yarn.lock ./
 
-# Install only production dependencies
-RUN npm install --production
+# Install only production dependencies using yarn
+RUN yarn install --production
 
 # Copy the rest of the application code
 COPY . .
 
 # Build the Next.js application
-RUN npm run build
+RUN yarn build
 
-# Remove development dependencies and unnecessary files
-RUN npm prune --production
+# Remove unnecessary files
+RUN yarn install --production --frozen-lockfile
 
 # Expose the port the app runs on
 EXPOSE 8080
 
 # Start the application in production mode
-CMD ["npm", "start"]
+CMD ["yarn", "start"]

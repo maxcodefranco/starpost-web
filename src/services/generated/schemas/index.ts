@@ -10,3 +10,4 @@ export * from './authControllerLoginBody';
 export * from './authControllerRefreshTokenBody';
 export * from './authControllerRegisterBody';
 export * from './authControllerRegisterBodyProfile';
+export * from './updateProfileDto';

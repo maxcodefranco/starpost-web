@@ -10,5 +10,6 @@ import type { AuthControllerRegisterBodyProfile } from './authControllerRegister
 export type AuthControllerRegisterBody = {
   username: string;
   password: string;
+  termsAccepted?: boolean;
   profile: AuthControllerRegisterBodyProfile;
 };

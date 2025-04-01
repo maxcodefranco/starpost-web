@@ -22,7 +22,8 @@ import type {
 import type {
   AuthControllerLoginBody,
   AuthControllerRefreshTokenBody,
-  AuthControllerRegisterBody
+  AuthControllerRegisterBody,
+  UpdateProfileDto
 } from './schemas';
 
 import { apiClientFunction } from '../apiClient';
@@ -319,25 +320,26 @@ export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof au
 
 
 
-export const profileControllerCreateProfile = (
-    
- signal?: AbortSignal
-) => {
+export const authControllerUpdateProfile = (
+    updateProfileDto: UpdateProfileDto,
+ ) => {
       
       
       return apiClientFunction<void>(
-      {url: `/profile`, method: 'POST', signal
+      {url: `/auth/profile`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateProfileDto
     },
       );
     }
   
 
 
-export const getProfileControllerCreateProfileMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof profileControllerCreateProfile>>, TError,void, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof profileControllerCreateProfile>>, TError,void, TContext> => {
+export const getAuthControllerUpdateProfileMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerUpdateProfile>>, TError,{data: UpdateProfileDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerUpdateProfile>>, TError,{data: UpdateProfileDto}, TContext> => {
     
-const mutationKey = ['profileControllerCreateProfile'];
+const mutationKey = ['authControllerUpdateProfile'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -347,10 +349,10 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof profileControllerCreateProfile>>, void> = () => {
-          
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerUpdateProfile>>, {data: UpdateProfileDto}> = (props) => {
+          const {data} = props ?? {};
 
-          return  profileControllerCreateProfile()
+          return  authControllerUpdateProfile(data,)
         }
 
         
@@ -358,20 +360,20 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type ProfileControllerCreateProfileMutationResult = NonNullable<Awaited<ReturnType<typeof profileControllerCreateProfile>>>
-    
-    export type ProfileControllerCreateProfileMutationError = unknown
+    export type AuthControllerUpdateProfileMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerUpdateProfile>>>
+    export type AuthControllerUpdateProfileMutationBody = UpdateProfileDto
+    export type AuthControllerUpdateProfileMutationError = unknown
 
-    export const useProfileControllerCreateProfile = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof profileControllerCreateProfile>>, TError,void, TContext>, }
+    export const useAuthControllerUpdateProfile = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerUpdateProfile>>, TError,{data: UpdateProfileDto}, TContext>, }
 ): UseMutationResult<
-        Awaited<ReturnType<typeof profileControllerCreateProfile>>,
+        Awaited<ReturnType<typeof authControllerUpdateProfile>>,
         TError,
-        void,
+        {data: UpdateProfileDto},
         TContext
       > => {
 
-      const mutationOptions = getProfileControllerCreateProfileMutationOptions(options);
+      const mutationOptions = getAuthControllerUpdateProfileMutationOptions(options);
 
       return useMutation(mutationOptions);
     }
