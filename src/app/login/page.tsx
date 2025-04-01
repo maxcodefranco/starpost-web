@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardFooter, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-label';
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useAuthControllerLogin } from '@/services/generated/api';
 import { useSearchParams, useRouter } from 'next/navigation';
 
@@ -17,10 +17,9 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const loginMutation = useAuthControllerLogin<LoginResponse>(); // Specify the response type
-    const searchParams = useSearchParams();
     const router = useRouter();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent, searchParams: URLSearchParams) => {
         e.preventDefault();
         setError(null); // Reset error state
         try {
@@ -35,13 +34,47 @@ const LoginPage = () => {
             console.log('Login successful:', response);
 
             // Redirect to returnUrl or default to home
-            const returnUrl = searchParams?.get('returnUrl') || '/';
+            const returnUrl = searchParams.get('returnUrl') || '/';
             router.push(returnUrl);
         } catch (err) {
             console.error('Login failed:', err);
             setError('Invalid username or password. Please try again.');
         }
     };
+
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <LoginContent
+                username={username}
+                setUsername={setUsername}
+                password={password}
+                setPassword={setPassword}
+                error={error}
+                handleSubmit={handleSubmit}
+                isLoading={loginMutation.isLoading}
+            />
+        </Suspense>
+    );
+};
+
+const LoginContent = ({
+    username,
+    setUsername,
+    password,
+    setPassword,
+    error,
+    handleSubmit,
+    isLoading,
+}: {
+    username: string;
+    setUsername: React.Dispatch<React.SetStateAction<string>>;
+    password: string;
+    setPassword: React.Dispatch<React.SetStateAction<string>>;
+    error: string | null;
+    handleSubmit: (e: React.FormEvent, searchParams: URLSearchParams) => void;
+    isLoading: boolean;
+}) => {
+    const searchParams = useSearchParams();
 
     return (
         <div className="flex h-screen">
@@ -55,7 +88,7 @@ const LoginPage = () => {
                         <h2 className="text-2xl font-bold text-center">Login</h2>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={(e) => handleSubmit(e, searchParams)}>
                             <div className="mb-4">
                                 <Label htmlFor="username">Username</Label>
                                 <Input
@@ -82,9 +115,9 @@ const LoginPage = () => {
                             <Button
                                 type="submit"
                                 className="w-full"
-                                disabled={loginMutation.isLoading}
+                                disabled={isLoading}
                             >
-                                {loginMutation.isLoading ? 'Logging in...' : 'Login'}
+                                {isLoading ? 'Logging in...' : 'Login'}
                             </Button>
                         </form>
                     </CardContent>
