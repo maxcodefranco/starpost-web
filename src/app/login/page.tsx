@@ -35,8 +35,7 @@ const LoginPage = () => {
             console.log('Login successful:', response);
 
             // Redirect to returnUrl or default to home
-            const returnUrl = searchParams.get('returnUrl') || '/';
-
+            const returnUrl = searchParams?.get('returnUrl') || '/';
             router.push(returnUrl);
         } catch (err) {
             console.error('Login failed:', err);
