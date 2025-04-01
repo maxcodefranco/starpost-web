@@ -23,6 +23,9 @@ import type {
   AuthControllerLoginBody,
   AuthControllerRefreshTokenBody,
   AuthControllerRegisterBody,
+  LoginOutputDto,
+  ProfileOutputDto,
+  RegisterOutputDto,
   UpdateProfileDto
 } from './schemas';
 
@@ -91,7 +94,7 @@ export const authControllerRegister = (
 ) => {
       
       
-      return apiClientFunction<void>(
+      return apiClientFunction<RegisterOutputDto>(
       {url: `/auth/register`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: authControllerRegisterBody, signal
@@ -150,7 +153,7 @@ export const authControllerLogin = (
 ) => {
       
       
-      return apiClientFunction<void>(
+      return apiClientFunction<LoginOutputDto>(
       {url: `/auth/login`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: authControllerLoginBody, signal
@@ -160,7 +163,7 @@ export const authControllerLogin = (
   
 
 
-export const getAuthControllerLoginMutationOptions = <TError = unknown,
+export const getAuthControllerLoginMutationOptions = <TError = void,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: AuthControllerLoginBody}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: AuthControllerLoginBody}, TContext> => {
     
@@ -187,9 +190,9 @@ const {mutation: mutationOptions} = options ?
 
     export type AuthControllerLoginMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerLogin>>>
     export type AuthControllerLoginMutationBody = AuthControllerLoginBody
-    export type AuthControllerLoginMutationError = unknown
+    export type AuthControllerLoginMutationError = void
 
-    export const useAuthControllerLogin = <TError = unknown,
+    export const useAuthControllerLogin = <TError = void,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: AuthControllerLoginBody}, TContext>, }
 ): UseMutationResult<
         Awaited<ReturnType<typeof authControllerLogin>>,
@@ -209,7 +212,7 @@ export const authControllerRefreshToken = (
 ) => {
       
       
-      return apiClientFunction<void>(
+      return apiClientFunction<LoginOutputDto>(
       {url: `/auth/refresh-token`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: authControllerRefreshTokenBody, signal
@@ -219,7 +222,7 @@ export const authControllerRefreshToken = (
   
 
 
-export const getAuthControllerRefreshTokenMutationOptions = <TError = unknown,
+export const getAuthControllerRefreshTokenMutationOptions = <TError = void,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRefreshToken>>, TError,{data: AuthControllerRefreshTokenBody}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof authControllerRefreshToken>>, TError,{data: AuthControllerRefreshTokenBody}, TContext> => {
     
@@ -246,9 +249,9 @@ const {mutation: mutationOptions} = options ?
 
     export type AuthControllerRefreshTokenMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerRefreshToken>>>
     export type AuthControllerRefreshTokenMutationBody = AuthControllerRefreshTokenBody
-    export type AuthControllerRefreshTokenMutationError = unknown
+    export type AuthControllerRefreshTokenMutationError = void
 
-    export const useAuthControllerRefreshToken = <TError = unknown,
+    export const useAuthControllerRefreshToken = <TError = void,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRefreshToken>>, TError,{data: AuthControllerRefreshTokenBody}, TContext>, }
 ): UseMutationResult<
         Awaited<ReturnType<typeof authControllerRefreshToken>>,
@@ -268,7 +271,7 @@ export const authControllerGetProfile = (
 ) => {
       
       
-      return apiClientFunction<void>(
+      return apiClientFunction<ProfileOutputDto>(
       {url: `/auth/profile`, method: 'GET', signal
     },
       );
@@ -325,7 +328,7 @@ export const authControllerUpdateProfile = (
  ) => {
       
       
-      return apiClientFunction<void>(
+      return apiClientFunction<ProfileOutputDto>(
       {url: `/auth/profile`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateProfileDto
@@ -335,7 +338,7 @@ export const authControllerUpdateProfile = (
   
 
 
-export const getAuthControllerUpdateProfileMutationOptions = <TError = unknown,
+export const getAuthControllerUpdateProfileMutationOptions = <TError = void,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerUpdateProfile>>, TError,{data: UpdateProfileDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof authControllerUpdateProfile>>, TError,{data: UpdateProfileDto}, TContext> => {
     
@@ -362,9 +365,9 @@ const {mutation: mutationOptions} = options ?
 
     export type AuthControllerUpdateProfileMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerUpdateProfile>>>
     export type AuthControllerUpdateProfileMutationBody = UpdateProfileDto
-    export type AuthControllerUpdateProfileMutationError = unknown
+    export type AuthControllerUpdateProfileMutationError = void
 
-    export const useAuthControllerUpdateProfile = <TError = unknown,
+    export const useAuthControllerUpdateProfile = <TError = void,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerUpdateProfile>>, TError,{data: UpdateProfileDto}, TContext>, }
 ): UseMutationResult<
         Awaited<ReturnType<typeof authControllerUpdateProfile>>,

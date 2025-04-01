@@ -1,211 +1,125 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { useAuthControllerRegister, useAuthControllerUpdateProfile } from "@/services/generated/api";
-import axios from "axios";
+import { useAuthControllerRegister } from "@/services/generated/api";
+import { useRouter } from "next/navigation";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
-interface FormData {
-    username?: string;
-    password?: string;
-    termsAccepted?: boolean;
-    photo?: File | null;
-    profileData?: {
-        bio?: string;
-    };
-}
+const registerSchema = z.object({
+    username: z.string().min(1, "Username is required."),
+    password: z.string().min(6, "Password must be at least 6 characters."),
+    termsAccepted: z.literal(true, {
+        errorMap: () => ({ message: "You must accept the terms." }),
+    }),
+});
+
+type RegisterFormData = z.infer<typeof registerSchema>;
 
 const RegisterPage = () => {
-    const [step, setStep] = useState(1);
-    const [formData, setFormData] = useState<FormData>({
-        username: "",
-        password: "",
-        termsAccepted: false,
-        photo: null,
-        profileData: {
-            bio: "",
-        },
+    const router = useRouter();
+    const registerMutation = useAuthControllerRegister();
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<RegisterFormData>({
+        resolver: zodResolver(registerSchema),
     });
 
-    const registerMutation = useAuthControllerRegister();
-    const updateProfileMutation = useAuthControllerUpdateProfile();
+    const onSubmit = async (data: RegisterFormData) => {
+        try {
+            const response = await registerMutation.mutateAsync({
+                data: {
+                    username: data.username,
+                    password: data.password,
+                    termsAccepted: data.termsAccepted,
+                },
+            });
 
-    const handleNext = async () => {
-        if (step === 1) {
-            // Submit authentication data
-            try {
-                await registerMutation.mutateAsync({
-                    data: {
-                        username: formData.username || "",
-                        password: formData.password || "",
-                        termsAccepted: formData.termsAccepted || false,
-                        profile: {
-                            email: "",
-                            firstName: "",
-                            lastName: "",
-                        },
-                    },
-                });
-                setStep(step + 1);
-            } catch (error) {
-                console.error("Registration failed:", error);
-            }
-        } else if (step === 2) {
-            // Submit photo upload
-            if (formData.photo) {
-                const formDataObj = new FormData();
-                formDataObj.append("photo", formData.photo);
+            console.log("Registration successful:", response);
 
-                try {
-                    await axios.post(
-                        `${process.env.NEXT_PUBLIC_API_HOST}/upload-photo`,
-                        formDataObj,
-                        {
-                            headers: {
-                                "Content-Type": "multipart/form-data",
-                            },
-                        }
-                    );
-                    setStep(step + 1);
-                } catch (error) {
-                    console.error("Photo upload failed:", error);
-                }
-            } else {
-                console.error("No photo selected");
-            }
-        } else if (step === 3) {
-            // Submit profile data
-            try {
-                await updateProfileMutation.mutateAsync({
-                    data: {
-                        bio: formData?.profileData?.bio || "", // Ensure bio is passed correctly
-                    },
-                });
-                console.log("Profile updated successfully");
-            } catch (error) {
-                console.error("Profile update failed:", error);
-            }
+            router.push("/onboarding");
+        } catch (error) {
+            console.error("Registration failed:", error);
         }
     };
 
-    const handleBack = () => {
-        if (step > 1) setStep(step - 1);
+    const handleOAuth = async (provider: string) => {
+        try {
+            console.log(`Redirecting to ${provider} OAuth...`);
+            router.push("/onboarding");
+        } catch (error) {
+            console.error("OAuth failed:", error);
+        }
     };
 
     return (
         <div className="flex items-center justify-center h-screen bg-gray-100">
             <div className="w-full max-w-lg bg-white p-8 shadow-lg rounded-lg">
-                {step === 1 && (
-                    <div>
-                        <h2 className="text-2xl font-bold mb-4">Step 1: Authentication</h2>
-                        <div className="mb-4">
-                            <Label htmlFor="username">Username</Label>
-                            <Input
-                                type="text"
-                                id="username"
-                                value={formData.username}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, username: e.target.value })
-                                }
-                                placeholder="Enter your username"
-                                className="mt-1"
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <Label htmlFor="password">Password</Label>
-                            <Input
-                                type="password"
-                                id="password"
-                                value={formData.password}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, password: e.target.value })
-                                }
-                                placeholder="Enter your password"
-                                className="mt-1"
-                            />
-                        </div>
-                        <div className="mb-4">
-                            <label className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    checked={formData.termsAccepted}
-                                    onChange={(e) =>
-                                        setFormData({
-                                            ...formData,
-                                            termsAccepted: e.target.checked,
-                                        })
-                                    }
-                                    className="mr-2"
-                                />
-                                I accept the terms and conditions
-                            </label>
-                        </div>
+                <h2 className="text-2xl font-bold mb-4">Register</h2>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="mb-4">
+                        <Label htmlFor="username">Username</Label>
+                        <Input
+                            type="text"
+                            id="username"
+                            {...register("username")}
+                            placeholder="Enter your username"
+                            className={`mt-1 ${errors.username ? "border-red-500" : ""}`}
+                        />
+                        {errors.username && (
+                            <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
+                        )}
                     </div>
-                )}
-
-                {step === 2 && (
-                    <div>
-                        <h2 className="text-2xl font-bold mb-4">Step 2: Upload Photo</h2>
-                        <div className="mb-4">
-                            <Label htmlFor="photo">Profile Photo</Label>
-                            <Input
-                                type="file"
-                                id="photo"
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        photo: e.target.files ? e.target.files[0] : null,
-                                    })
-                                }
-                                className="mt-1"
-                            />
-                        </div>
+                    <div className="mb-4">
+                        <Label htmlFor="password">Password</Label>
+                        <Input
+                            type="password"
+                            id="password"
+                            {...register("password")}
+                            placeholder="Enter your password"
+                            className={`mt-1 ${errors.password ? "border-red-500" : ""}`}
+                        />
+                        {errors.password && (
+                            <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+                        )}
                     </div>
-                )}
-
-                {step === 3 && (
-                    <div>
-                        <h2 className="text-2xl font-bold mb-4">Step 3: Profile Details</h2>
-                        <div className="mb-4">
-                            <Label htmlFor="bio">Bio</Label>
-                            <Input
-                                type="text"
-                                id="bio"
-                                value={formData?.profileData?.bio}
-                                onChange={(e) =>
-                                    setFormData({
-                                        ...formData,
-                                        profileData: {
-                                            ...formData.profileData,
-                                            bio: e.target.value,
-                                        },
-                                    })
-                                }
-                                placeholder="Tell us about yourself"
-                                className="mt-1"
+                    <div className="mb-4">
+                        <label className="flex items-center">
+                            <input
+                                type="checkbox"
+                                {...register("termsAccepted")}
+                                className={`mr-2 ${errors.termsAccepted ? "border-red-500" : ""}`}
                             />
-                        </div>
+                            I accept the terms and conditions
+                        </label>
+                        {errors.termsAccepted && (
+                            <p className="text-red-500 text-sm mt-1">{errors.termsAccepted.message}</p>
+                        )}
                     </div>
-                )}
-
-                <div className="flex justify-between mt-6">
-                    {step > 1 && (
-                        <Button onClick={handleBack} className="bg-gray-300">
-                            Back
-                        </Button>
-                    )}
-                    {step < 3 ? (
-                        <Button onClick={handleNext} className="bg-blue-500 text-white">
-                            Next
-                        </Button>
-                    ) : (
-                        <Button onClick={handleNext} className="bg-green-500 text-white">
-                            Submit
-                        </Button>
-                    )}
-                </div>
+                    <Button type="submit" className="w-full bg-blue-500 text-white mb-4">
+                        Register
+                    </Button>
+                </form>
+                <div className="text-center text-gray-600 mb-4">or</div>
+                <Button
+                    onClick={() => handleOAuth("Google")}
+                    className="w-full bg-red-500 text-white mb-2"
+                >
+                    Continue with Google
+                </Button>
+                <Button
+                    onClick={() => handleOAuth("GitHub")}
+                    className="w-full bg-gray-800 text-white"
+                >
+                    Continue with GitHub
+                </Button>
             </div>
         </div>
     );

@@ -12,6 +12,11 @@ module.exports = {
                     path: './src/services/apiClient.ts', // Custom API client for Next.js
                     name: 'apiClientFunction', // Use the named function
                 },
+                operations: {
+                    authControllerRegister: {
+                        responseType: './src/services/generated/schemas#RegisterOutputDto', // Map to the correct response DTO
+                    },
+                },
             },
         },
         input: {

@@ -11,5 +11,5 @@ export type AuthControllerRegisterBody = {
   username: string;
   password: string;
   termsAccepted?: boolean;
-  profile: AuthControllerRegisterBodyProfile;
+  profile?: AuthControllerRegisterBodyProfile;
 };
