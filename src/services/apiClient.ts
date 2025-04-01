@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
 
 let isRefreshing = false;
 let failedQueue: { resolve: (token: string | null) => void; reject: (error: unknown) => void }[] = [];
@@ -22,7 +22,7 @@ export const apiClient = axios.create({
 });
 
 // Request interceptor to attach token
-apiClient.interceptors.request.use((config: AxiosRequestConfig) => {
+apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('accessToken');
     if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -90,4 +90,6 @@ apiClient.interceptors.response.use(
 );
 
 // Export a named function for Orval mutator compatibility
-export const apiClientFunction = (config: AxiosRequestConfig) => apiClient(config);
+export function apiClientFunction<T>(config: AxiosRequestConfig) {
+    return apiClient<T>(config);
+}

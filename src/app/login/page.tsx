@@ -7,11 +7,16 @@ import React, { useState } from 'react';
 import { useAuthControllerLogin } from '@/services/generated/api';
 import { useSearchParams, useRouter } from 'next/navigation';
 
+interface LoginResponse {
+    accessToken: string;
+    refreshToken: string;
+}
+
 const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
-    const loginMutation = useAuthControllerLogin();
+    const loginMutation = useAuthControllerLogin<LoginResponse>(); // Specify the response type
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -31,6 +36,7 @@ const LoginPage = () => {
 
             // Redirect to returnUrl or default to home
             const returnUrl = searchParams.get('returnUrl') || '/';
+
             router.push(returnUrl);
         } catch (err) {
             console.error('Login failed:', err);

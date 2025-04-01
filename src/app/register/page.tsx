@@ -36,7 +36,6 @@ const RegisterPage = () => {
         if (step === 1) {
             // Submit authentication data
             try {
-                ''
                 await registerMutation.mutateAsync({
                     data: {
                         username: formData.username || "",
@@ -46,7 +45,7 @@ const RegisterPage = () => {
                             email: "",
                             firstName: "",
                             lastName: "",
-                        }
+                        },
                     },
                 });
                 setStep(step + 1);
