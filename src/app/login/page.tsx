@@ -29,8 +29,8 @@ const LoginPage = () => {
             });
 
             // Store tokens in localStorage
-            localStorage.setItem('accessToken', response.data.accessToken);
-            localStorage.setItem('refreshToken', response.data.refreshToken);
+            localStorage.setItem('accessToken', (response.data as any).accessToken);
+            localStorage.setItem('refreshToken', (response.data as any).refreshToken);
 
             console.log('Login successful:', response);
 
