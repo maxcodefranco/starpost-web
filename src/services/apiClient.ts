@@ -13,9 +13,9 @@ const processQueue = (error: unknown, token: string | null = null) => {
     });
     failedQueue = [];
 };
-
+console.log({ envs: process.env.NEXT_PUBLIC_API_HOST })
 export const apiClient = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_HOST, // Use the API host from environment variables
+    baseURL: process.env.API_HOST, // Use the API host from environment variables
     headers: {
         'Content-Type': 'application/json',
     },
@@ -62,7 +62,7 @@ apiClient.interceptors.response.use(
                 }
 
                 const response = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_HOST}/auth/refresh-token`,
+                    `${process.env.API_HOST}/auth/refresh-token`,
                     { refreshToken }
                 );
 

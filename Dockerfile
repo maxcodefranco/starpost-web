@@ -1,28 +1,36 @@
-# Use the official Node.js 20 image as the base image
-FROM node:20-alpine AS base
+# Etapa de build
+FROM node:20-alpine AS builder
 
-# Set the working directory
 WORKDIR /app
 
-# Copy package.json and yarn.lock
 COPY package.json yarn.lock ./
 
-# Install only production dependencies using yarn
-RUN yarn install --production
+RUN yarn install
 
-# Copy the rest of the application code
 COPY . .
 
-# Build the Next.js application
+# Aqui você pode usar .env.local, se quiser testar localmente
+# No Railway, você usará ENV ou Build Args
+
 RUN yarn build
 
-# Expose the port dynamically using the PORT environment variable
+# Etapa de produção
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# Copia apenas os arquivos necessários do build
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+
+# Railway usará essa porta, pode ser configurável
 ENV PORT=8080
 EXPOSE ${PORT}
 
-# Ensure the application uses the environment variables provided by Railway
-ENV NEXT_PUBLIC_API_HOST=${NEXT_PUBLIC_API_HOST}
-ENV NEXT_PUBLIC_ENABLE_CORS=${NEXT_PUBLIC_ENABLE_CORS}
+# NEXT config
+ENV NODE_ENV=production
 
-# Start the application in production mode
+# Inicia o Next.js como servidor completo (SSR + API routes)
 CMD ["yarn", "start"]
