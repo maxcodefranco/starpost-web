@@ -21,14 +21,11 @@ const LoginPage = () => {
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        const username = formData.get("username") as string;
-        const password = formData.get("password") as string;
 
         setError(null); // Reset error state
         try {
             const response = await loginMutation.mutateAsync({
-                data: { username, password },
+                data: { username, password }, // Envia os dados corretamente
             });
 
             // Store tokens in localStorage

@@ -30,13 +30,6 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 
-ARG NEXT_PUBLIC_API_HOST
-ARG NEXT_PUBLIC_ENABLE_CORS
-
-# Disponibiliza elas no ambiente durante o build
-ENV NEXT_PUBLIC_API_HOST=$NEXT_PUBLIC_API_HOST
-ENV NEXT_PUBLIC_ENABLE_CORS=$NEXT_PUBLIC_ENABLE_CORS
-
 # Railway usará essa porta, pode ser configurável
 ENV PORT=8080
 EXPOSE ${PORT}
