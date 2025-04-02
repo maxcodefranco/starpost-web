@@ -16,11 +16,13 @@ COPY . .
 # Build the Next.js application
 RUN yarn build
 
-# Remove unnecessary files
-RUN yarn install --production --frozen-lockfile
+# Expose the port dynamically using the PORT environment variable
+ENV PORT=8080
+EXPOSE ${PORT}
 
-# Expose the port the app runs on
-EXPOSE 8080
+# Ensure the application uses the environment variables provided by Railway
+ENV NEXT_PUBLIC_API_HOST=${NEXT_PUBLIC_API_HOST}
+ENV NEXT_PUBLIC_ENABLE_CORS=${NEXT_PUBLIC_ENABLE_CORS}
 
 # Start the application in production mode
 CMD ["yarn", "start"]
