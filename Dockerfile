@@ -11,6 +11,11 @@ COPY . .
 
 # Aqui você pode usar .env.local, se quiser testar localmente
 # No Railway, você usará ENV ou Build Args
+ARG NEXT_PUBLIC_API_HOST
+ARG NEXT_PUBLIC_ENABLE_CORS
+
+ENV NEXT_PUBLIC_API_HOST=$NEXT_PUBLIC_API_HOST
+ENV NEXT_PUBLIC_ENABLE_CORS=$NEXT_PUBLIC_ENABLE_CORS
 
 RUN yarn build
 

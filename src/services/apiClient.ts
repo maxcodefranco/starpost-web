@@ -62,7 +62,7 @@ apiClient.interceptors.response.use(
                 }
 
                 const response = await axios.post(
-                    `${process.env.API_HOST}/auth/refresh-token`,
+                    `${process.env.NEXT_PUBLIC_API_HOST}/auth/refresh-token`,
                     { refreshToken }
                 );
 
